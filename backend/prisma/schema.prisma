@@ -3,8 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Utilisée par Prisma uniquement pour les migrations : une connexion directe
+  // (non "pooled") est nécessaire avec un pooler comme celui de Neon. En local,
+  // laisse DIRECT_URL vide dans .env — Prisma retombe sur DATABASE_URL.
+  directUrl = env("DIRECT_URL")
 }
 
 enum StatutEntreprise {

@@ -55,10 +55,15 @@ export async function verifierSuivi(req: Request, res: Response) {
   }
 
   const sessionToken = signClientSession({ commandeId: commande.id });
+  const isProd = process.env.NODE_ENV === "production";
   res.cookie(SESSION_COOKIE, sessionToken, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    // En prod, frontend et backend vivent sur des domaines Vercel différents :
+    // il faut "none" (+ secure) pour que le cookie soit envoyé cross-site.
+    // En local (http://localhost), "none" exigerait quand même secure=true, que
+    // les navigateurs refusent sans HTTPS — on reste donc sur "lax" en dev.
+    sameSite: isProd ? "none" : "lax",
+    secure: isProd,
     maxAge: 6 * 60 * 60 * 1000,
   });
 

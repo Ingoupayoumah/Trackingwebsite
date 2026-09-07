@@ -5,6 +5,7 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SuiviPage } from "./pages/SuiviPage";
+import { SuivreLookupPage } from "./pages/SuivreLookupPage";
 
 function ProtectedRoute({
   children,
@@ -40,6 +41,7 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/suivre" element={<SuivreLookupPage />} />
       <Route path="/suivi/:trackingCode" element={<SuiviPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

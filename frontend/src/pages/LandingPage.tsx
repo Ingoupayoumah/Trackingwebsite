@@ -1,48 +1,37 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import heroDelivery from "../assets/hero-delivery.jpg";
 
 const FEATURES = [
   {
-    icon: "🐾",
-    title: "Transport porte-à-porte",
-    text: "Votre chien est pris en charge chez vous et livré directement chez le destinataire, sans étape intermédiaire.",
+    icon: "📦",
+    title: "Livraison porte-à-porte",
+    text: "Votre colis est enlevé à l'adresse convenue et livré directement à destination, sans rupture de charge.",
   },
   {
     icon: "📍",
-    title: "Suivi en temps réel",
-    text: "Suivez le trajet de votre compagnon sur une carte, du départ jusqu'à l'arrivée, avec chaque étape horodatée.",
+    title: "Suivi GPS en temps réel",
+    text: "Chaque étape du trajet est visible sur une carte interactive, du départ jusqu'à la livraison.",
   },
   {
-    icon: "🩺",
-    title: "Chauffeurs formés bien-être animal",
-    text: "Une équipe sensibilisée au confort et au stress des animaux, avec pauses régulières et véhicules adaptés.",
+    icon: "🚚",
+    title: "Chauffeurs professionnels et assurés",
+    text: "Une équipe expérimentée et des véhicules équipés pour transporter vos marchandises en toute sécurité.",
   },
   {
     icon: "✉️",
     title: "Notifications automatiques",
-    text: "Un email vous informe à chaque étape clé du transport, sans avoir besoin de créer de compte.",
+    text: "Vos destinataires reçoivent un email à chaque étape clé, sans avoir besoin de créer de compte.",
   },
 ];
 
 const STEPS = [
-  { title: "Réservez", text: "Contactez-nous avec les détails du trajet et de votre animal." },
-  { title: "Prise en charge", text: "Notre équipe récupère votre chien à l'adresse convenue." },
-  { title: "Suivi en direct", text: "Vous recevez un code de suivi et suivez le trajet en ligne." },
-  { title: "Livraison", text: "Votre chien arrive en toute sécurité à destination." },
+  { title: "Réservez votre envoi", text: "Contactez-nous avec les détails de votre colis et de la livraison souhaitée." },
+  { title: "Prise en charge", text: "Notre équipe récupère votre colis à l'adresse convenue." },
+  { title: "Suivi en direct", text: "Vous recevez un code de suivi et suivez le trajet en ligne à tout moment." },
+  { title: "Livraison", text: "Votre colis arrive à destination, en toute sécurité et dans les délais." },
 ];
 
 export function LandingPage() {
-  const [trackingCode, setTrackingCode] = useState("");
-  const navigate = useNavigate();
-
-  function onTrack(e: FormEvent) {
-    e.preventDefault();
-    if (trackingCode.trim()) {
-      navigate(`/suivi/${trackingCode.trim()}`);
-    }
-  }
-
   return (
     <div className="page">
       <div className="landing-navbar">
@@ -54,7 +43,7 @@ export function LandingPage() {
           <div className="landing-nav-links">
             <a href="#services">Services</a>
             <a href="#comment-ca-marche">Comment ça marche</a>
-            <a href="#suivi">Suivre un colis</a>
+            <Link to="/suivre">Suivre un colis</Link>
             <Link to="/login" className="btn btn-outline btn-sm">
               Espace entreprise
             </Link>
@@ -64,46 +53,43 @@ export function LandingPage() {
 
       <div className="hero">
         <div className="hero-inner">
-          <span className="hero-eyebrow">📍 Basé à Strasbourg, France</span>
-          <h1>Le transport de votre chien, en toute sérénité</h1>
-          <p className="lead">
-            Golden Pet Transport organise le transport de vos animaux de compagnie partout en
-            France, avec un suivi en temps réel et des chauffeurs formés au bien-être animal.
-          </p>
-          <div className="hero-actions">
-            <a href="#contact" className="btn btn-primary">
-              Demander un devis
-            </a>
-            <a href="#suivi" className="btn btn-outline">
-              Suivre mon colis
-            </a>
+          <div className="hero-text">
+            <span className="hero-eyebrow">📍 Basé à Strasbourg, France</span>
+            <h1>Vos colis livrés à temps, suivis à chaque étape</h1>
+            <p className="lead">
+              Golden Pet Transport prend en charge le transport de vos colis partout en France :
+              enlèvement, transit et livraison, avec un suivi en temps réel accessible à tout
+              moment — sans compte à créer.
+            </p>
+            <div className="hero-actions">
+              <a href="#contact" className="btn btn-primary">
+                Demander un devis
+              </a>
+              <Link to="/suivre" className="btn btn-outline">
+                Suivre mon colis
+              </Link>
+            </div>
           </div>
-
-          <form className="track-box" onSubmit={onTrack} id="suivi">
-            <input
-              className="input"
-              placeholder="Entrez votre code de suivi (ex: LOG-XXXXXXXX)"
-              value={trackingCode}
-              onChange={(e) => setTrackingCode(e.target.value)}
+          <div className="hero-photo">
+            <img
+              src={heroDelivery}
+              alt="Chargement de colis dans une camionnette de livraison"
             />
-            <button type="submit" className="btn btn-primary">
-              Suivre
-            </button>
-          </form>
+          </div>
+        </div>
 
-          <div className="stats-row">
-            <div>
-              <div className="stat-number">500+</div>
-              <div className="stat-label">Chiens transportés</div>
-            </div>
-            <div>
-              <div className="stat-number">98%</div>
-              <div className="stat-label">Clients satisfaits</div>
-            </div>
-            <div>
-              <div className="stat-number">100%</div>
-              <div className="stat-label">Trajets suivis en direct</div>
-            </div>
+        <div className="stats-row">
+          <div>
+            <div className="stat-number">2 500+</div>
+            <div className="stat-label">Colis livrés</div>
+          </div>
+          <div>
+            <div className="stat-number">98%</div>
+            <div className="stat-label">Clients satisfaits</div>
+          </div>
+          <div>
+            <div className="stat-number">100%</div>
+            <div className="stat-label">Trajets suivis en direct</div>
           </div>
         </div>
       </div>
@@ -111,8 +97,8 @@ export function LandingPage() {
       <div className="section" id="services">
         <div className="section-header">
           <span className="eyebrow">Nos services</span>
-          <h2>Un transport pensé pour le confort de votre animal</h2>
-          <p>De la prise en charge à la livraison, chaque étape est pensée pour rassurer.</p>
+          <h2>Un transport de colis fiable, de bout en bout</h2>
+          <p>De la prise en charge à la livraison, chaque étape est suivie et sécurisée.</p>
         </div>
         <div className="feature-grid">
           {FEATURES.map((f) => (

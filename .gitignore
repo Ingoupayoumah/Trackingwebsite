@@ -4,3 +4,5 @@ dist/
 *.log
 .claude/scheduled_tasks.lock
 *.tsbuildinfo
+.neon
+.env.local

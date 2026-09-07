@@ -1,9 +1,14 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { AdminEntreprisesPage } from "./pages/AdminEntreprisesPage";
+import { CommentCaMarchePage } from "./pages/CommentCaMarchePage";
+import { ContactPage } from "./pages/ContactPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
+import { LegalNoticePage } from "./pages/LegalNoticePage";
 import { LoginPage } from "./pages/LoginPage";
+import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
+import { ServicesPage } from "./pages/ServicesPage";
 import { SuiviPage } from "./pages/SuiviPage";
 import { SuivreLookupPage } from "./pages/SuivreLookupPage";
 
@@ -24,6 +29,11 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/services" element={<ServicesPage />} />
+      <Route path="/comment-ca-marche" element={<CommentCaMarchePage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/politique-de-confidentialite" element={<PrivacyPolicyPage />} />
+      <Route path="/mentions-legales" element={<LegalNoticePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route
         path="/dashboard"

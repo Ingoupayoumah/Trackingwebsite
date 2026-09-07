@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { api } from "../api/client";
 import { STATUTS } from "../api/types";
 import type { Commande, Entreprise, StatutCommande } from "../api/types";
+import { Navbar } from "../components/Navbar";
+import { StatusBadge } from "../components/StatusBadge";
 import { useAuth } from "../context/AuthContext";
 
 export function DashboardPage() {
-  const { auth, logout } = useAuth();
+  const { auth } = useAuth();
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [selected, setSelected] = useState<Commande | null>(null);
 
@@ -25,44 +26,58 @@ export function DashboardPage() {
   }, []);
 
   return (
-    <div style={{ maxWidth: 960, margin: "40px auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1>Commandes {auth?.nom ? `— ${auth.nom}` : ""}</h1>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          {auth?.role === "admin" && <Link to="/admin/entreprises">Entreprises</Link>}
-          <button onClick={logout}>Déconnexion</button>
+    <div className="page">
+      <Navbar />
+      <div className="page-content">
+        <div className="page-header">
+          <div>
+            <h1>Commandes</h1>
+            <p>{auth?.nom ? `${auth.nom} — ` : ""}créez et suivez vos livraisons</p>
+          </div>
         </div>
+
+        <CreateCommandeForm isAdmin={auth?.role === "admin"} onCreated={refresh} />
+
+        <div className="card">
+          <h2 className="card-title">Liste des commandes</h2>
+          {commandes.length === 0 ? (
+            <p className="helper-text">Aucune commande pour le moment.</p>
+          ) : (
+            <div className="table-wrap">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Tracking code</th>
+                    <th>Client</th>
+                    <th>Statut</th>
+                    <th>Créée le</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {commandes.map((c) => (
+                    <tr key={c.id}>
+                      <td style={{ fontFamily: "monospace", fontWeight: 600 }}>{c.trackingCode}</td>
+                      <td>{c.clientNom}</td>
+                      <td>
+                        <StatusBadge statut={c.statutActuel} />
+                      </td>
+                      <td className="helper-text">{new Date(c.createdAt).toLocaleString()}</td>
+                      <td>
+                        <button className="btn btn-outline btn-sm" onClick={() => setSelected(c)}>
+                          Gérer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {selected && <CommandeDetail commande={selected} onUpdated={refresh} />}
       </div>
-
-      <CreateCommandeForm isAdmin={auth?.role === "admin"} onCreated={refresh} />
-
-      <h2>Liste</h2>
-      <table width="100%" cellPadding={6}>
-        <thead>
-          <tr>
-            <th align="left">Tracking code</th>
-            <th align="left">Client</th>
-            <th align="left">Statut</th>
-            <th align="left">Créée le</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {commandes.map((c) => (
-            <tr key={c.id}>
-              <td>{c.trackingCode}</td>
-              <td>{c.clientNom}</td>
-              <td>{c.statutActuel}</td>
-              <td>{new Date(c.createdAt).toLocaleString()}</td>
-              <td>
-                <button onClick={() => setSelected(c)}>Gérer</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {selected && <CommandeDetail commande={selected} onUpdated={refresh} />}
     </div>
   );
 }
@@ -129,82 +144,114 @@ function CreateCommandeForm({
   }
 
   return (
-    <fieldset>
-      <legend>Nouvelle commande</legend>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 8, gridTemplateColumns: "1fr 1fr" }}>
+    <div className="card">
+      <h2 className="card-title">Nouvelle commande</h2>
+      <form onSubmit={onSubmit} className="form-grid">
         {isAdmin && (
-          <select
-            value={form.entrepriseId}
-            onChange={(e) => set("entrepriseId", e.target.value)}
-            required
-          >
-            <option value="" disabled>
-              Choisir une entreprise
-            </option>
-            {entreprises.map((ent) => (
-              <option key={ent.id} value={ent.id}>
-                {ent.nom}
+          <div className="field">
+            <label>Entreprise</label>
+            <select
+              className="input"
+              value={form.entrepriseId}
+              onChange={(e) => set("entrepriseId", e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Choisir une entreprise
               </option>
-            ))}
-          </select>
+              {entreprises.map((ent) => (
+                <option key={ent.id} value={ent.id}>
+                  {ent.nom}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
-        <input
-          placeholder="Nom du client"
-          value={form.clientNom}
-          onChange={(e) => set("clientNom", e.target.value)}
-          required
-        />
-        <input
-          placeholder="Email du client"
-          type="email"
-          value={form.clientEmail}
-          onChange={(e) => set("clientEmail", e.target.value)}
-          required
-        />
-        <input
-          placeholder="Téléphone du client"
-          value={form.clientTelephone}
-          onChange={(e) => set("clientTelephone", e.target.value)}
-        />
-        <input
-          placeholder="Point de départ (adresse)"
-          value={form.pointDepart}
-          onChange={(e) => set("pointDepart", e.target.value)}
-          required
-        />
-        <input
-          placeholder="Point de livraison (adresse)"
-          value={form.pointLivraison}
-          onChange={(e) => set("pointLivraison", e.target.value)}
-          required
-        />
-        <input
-          placeholder="Prix"
-          type="number"
-          step="0.01"
-          value={form.prix}
-          onChange={(e) => set("prix", e.target.value)}
-          required
-        />
-        <input
-          placeholder="Délai estimé (ex: 3-5 jours)"
-          value={form.delaiEstime}
-          onChange={(e) => set("delaiEstime", e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Description"
-          value={form.description}
-          onChange={(e) => set("description", e.target.value)}
-          required
-          style={{ gridColumn: "1 / -1" }}
-        />
-        {error && <p style={{ color: "crimson", gridColumn: "1 / -1" }}>{error}</p>}
-        <button type="submit" disabled={busy} style={{ gridColumn: "1 / -1" }}>
-          {busy ? "Création..." : "Créer la commande"}
-        </button>
+        <div className="field">
+          <label>Nom du client</label>
+          <input
+            className="input"
+            value={form.clientNom}
+            onChange={(e) => set("clientNom", e.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label>Email du client</label>
+          <input
+            className="input"
+            type="email"
+            value={form.clientEmail}
+            onChange={(e) => set("clientEmail", e.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label>Téléphone du client</label>
+          <input
+            className="input"
+            value={form.clientTelephone}
+            onChange={(e) => set("clientTelephone", e.target.value)}
+          />
+        </div>
+        <div className="field">
+          <label>Point de départ</label>
+          <input
+            className="input"
+            placeholder="Adresse ou ville"
+            value={form.pointDepart}
+            onChange={(e) => set("pointDepart", e.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label>Point de livraison</label>
+          <input
+            className="input"
+            placeholder="Adresse ou ville"
+            value={form.pointLivraison}
+            onChange={(e) => set("pointLivraison", e.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label>Prix (€)</label>
+          <input
+            className="input"
+            type="number"
+            step="0.01"
+            value={form.prix}
+            onChange={(e) => set("prix", e.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label>Délai estimé</label>
+          <input
+            className="input"
+            placeholder="ex: 3-5 jours"
+            value={form.delaiEstime}
+            onChange={(e) => set("delaiEstime", e.target.value)}
+            required
+          />
+        </div>
+        <div className="field span-2">
+          <label>Description</label>
+          <textarea
+            className="input"
+            value={form.description}
+            onChange={(e) => set("description", e.target.value)}
+            required
+          />
+        </div>
+        {error && <p className="form-error span-2">{error}</p>}
+        <div className="span-2">
+          <button type="submit" className="btn btn-primary" disabled={busy}>
+            {busy ? "Création..." : "Créer la commande"}
+          </button>
+        </div>
       </form>
-    </fieldset>
+    </div>
   );
 }
 
@@ -235,55 +282,87 @@ function CommandeDetail({ commande, onUpdated }: { commande: Commande; onUpdated
   }
 
   return (
-    <div style={{ border: "1px solid #ccc", padding: 16, marginTop: 16 }}>
-      <h3>
-        {commande.trackingCode} — {commande.clientNom}
-      </h3>
-      <p>
-        {commande.pointDepart} → {commande.pointLivraison}
-      </p>
+    <div className="card">
+      <div className="page-header" style={{ marginBottom: 20 }}>
+        <div>
+          <h2>
+            <span style={{ fontFamily: "monospace" }}>{commande.trackingCode}</span> —{" "}
+            {commande.clientNom}
+          </h2>
+          <p>
+            {commande.pointDepart} → {commande.pointLivraison}
+          </p>
+        </div>
+        <StatusBadge statut={commande.statutActuel} />
+      </div>
 
-      <h4>Historique</h4>
-      <ul>
+      <h3 style={{ marginBottom: 12 }}>Historique</h3>
+      <ul className="timeline">
         {commande.evenements.map((ev, i) => (
-          <li key={i}>
-            {new Date(ev.createdAt).toLocaleString()} — <strong>{ev.statut}</strong> : {ev.message}
-            {ev.notifie ? " (client notifié)" : ""}
+          <li key={i} className="timeline-item">
+            <div className="timeline-dot" />
+            <div className="timeline-content">
+              <div className="timeline-date">{new Date(ev.createdAt).toLocaleString()}</div>
+              <StatusBadge statut={ev.statut} />
+              <div className="timeline-message">
+                {ev.message}
+                {ev.notifie ? " · client notifié par email" : ""}
+              </div>
+            </div>
           </li>
         ))}
       </ul>
 
-      <h4>Ajouter une mise à jour</h4>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 8 }}>
-        <select value={statut} onChange={(e) => setStatut(e.target.value as StatutCommande)}>
-          {STATUTS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <input
-          placeholder="Message (ex: colis arrivé au centre de tri)"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          required
-        />
-        <input
-          placeholder="Localisation (adresse ou ville, optionnel)"
-          value={localisation}
-          onChange={(e) => setLocalisation(e.target.value)}
-        />
-        <label>
+      <h3 style={{ margin: "24px 0 12px" }}>Ajouter une mise à jour</h3>
+      <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="form-grid">
+          <div className="field">
+            <label>Statut</label>
+            <select
+              className="input"
+              value={statut}
+              onChange={(e) => setStatut(e.target.value as StatutCommande)}
+            >
+              {STATUTS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label>Localisation (optionnel)</label>
+            <input
+              className="input"
+              placeholder="ex: Centre de tri Lyon"
+              value={localisation}
+              onChange={(e) => setLocalisation(e.target.value)}
+            />
+          </div>
+          <div className="field span-2">
+            <label>Message</label>
+            <input
+              className="input"
+              placeholder="ex: colis arrivé au centre de tri"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
           <input
             type="checkbox"
             checked={notifierClient}
             onChange={(e) => setNotifierClient(e.target.checked)}
-          />{" "}
+          />
           Notifier le client par email
         </label>
-        <button type="submit" disabled={busy}>
-          {busy ? "Envoi..." : "Ajouter la mise à jour"}
-        </button>
+        <div>
+          <button type="submit" className="btn btn-primary" disabled={busy}>
+            {busy ? "Envoi..." : "Ajouter la mise à jour"}
+          </button>
+        </div>
       </form>
     </div>
   );

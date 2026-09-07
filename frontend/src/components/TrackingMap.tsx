@@ -40,7 +40,11 @@ interface TrackingMapProps {
 
 export function TrackingMap({ points }: TrackingMapProps) {
   if (points.length === 0) {
-    return <p>Aucune position disponible pour le moment.</p>;
+    return (
+      <p className="helper-text" style={{ padding: 24 }}>
+        Aucune position disponible pour le moment.
+      </p>
+    );
   }
 
   const path = points.map((p) => [p.lat, p.lng] as [number, number]);
@@ -53,13 +57,18 @@ export function TrackingMap({ points }: TrackingMapProps) {
       : [path[0], path[0]];
 
   return (
-    <MapContainer center={path[0]} zoom={6} style={{ height: 400, width: "100%" }}>
+    <MapContainer
+      center={path[0]}
+      zoom={6}
+      scrollWheelZoom={false}
+      style={{ height: 400, width: "100%" }}
+    >
       <FitBounds bounds={bounds} />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Polyline positions={path} />
+      <Polyline positions={path} pathOptions={{ color: "#ff6b2b", weight: 3 }} />
       {points.map((p, i) => (
         <Marker key={i} position={[p.lat, p.lng]} icon={defaultIcon}>
           <Popup>{p.isCurrent ? `Position actuelle : ${p.label}` : p.label}</Popup>

@@ -4,11 +4,13 @@ import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 import { TrackingMap } from "../components/TrackingMap";
 import type { TrackingPoint } from "../components/TrackingMap";
+import { StatusBadge } from "../components/StatusBadge";
+import type { StatutCommande } from "../api/types";
 
 interface SuiviData {
   trackingCode: string;
   entrepriseNom: string;
-  statutActuel: string;
+  statutActuel: StatutCommande;
   pointDepart: string;
   pointDepartLat: number | null;
   pointDepartLng: number | null;
@@ -19,7 +21,7 @@ interface SuiviData {
   delaiEstime: string;
   createdAt: string;
   evenements: {
-    statut: string;
+    statut: StatutCommande;
     message: string;
     localisation: string | null;
     latitude: number | null;
@@ -37,8 +39,6 @@ export function SuiviPage() {
   const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
-    // Réutilise le cookie de session posé par une vérification précédente,
-    // pour éviter de redemander l'email à chaque rafraîchissement de page.
     api
       .get<SuiviData>(`/suivi/${trackingCode}`)
       .then(({ data: result }) => setData(result))
@@ -65,26 +65,40 @@ export function SuiviPage() {
   }
 
   if (checkingSession) {
-    return <p style={{ textAlign: "center", marginTop: 80 }}>Chargement...</p>;
+    return <div className="centered-status">Chargement...</div>;
   }
 
   if (!data) {
     return (
-      <div style={{ maxWidth: 400, margin: "80px auto" }}>
-        <h1>Suivi de colis</h1>
-        <p>
-          Code : <strong>{trackingCode}</strong>
-        </p>
-        <form onSubmit={onSubmit}>
-          <label>
-            Confirmez votre email pour accéder au suivi
-            <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
-          </label>
-          {error && <p style={{ color: "crimson" }}>{error}</p>}
-          <button type="submit" disabled={busy}>
-            {busy ? "Vérification..." : "Voir le suivi"}
-          </button>
-        </form>
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="brand">
+            <span className="brand-mark">TF</span>
+            TrackFlow
+          </div>
+          <h1>Suivre mon colis</h1>
+          <p className="helper-text" style={{ textAlign: "center", marginBottom: 20 }}>
+            Code : <span className="tracking-code-pill">{trackingCode}</span>
+          </p>
+          <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="field">
+              <label>Confirmez votre email pour accéder au suivi</label>
+              <input
+                className="input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="vous@example.com"
+                required
+                autoFocus
+              />
+            </div>
+            {error && <p className="form-error">{error}</p>}
+            <button type="submit" className="btn btn-primary btn-block" disabled={busy}>
+              {busy ? "Vérification..." : "Voir le suivi"}
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
@@ -112,28 +126,54 @@ export function SuiviPage() {
   }
 
   return (
-    <div style={{ maxWidth: 720, margin: "40px auto" }}>
-      <h1>{data.entrepriseNom}</h1>
-      <p>
-        Code : <strong>{data.trackingCode}</strong> — Statut actuel :{" "}
-        <strong>{data.statutActuel}</strong>
-      </p>
-      <p>
-        {data.pointDepart} → {data.pointLivraison} (délai estimé : {data.delaiEstime})
-      </p>
-      <p>{data.description}</p>
+    <div className="page">
+      <div className="suivi-hero">
+        <div className="suivi-hero-inner">
+          <div className="brand" style={{ marginBottom: 20 }}>
+            <span className="brand-mark">TF</span>
+            TrackFlow
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
+            <h1>{data.entrepriseNom}</h1>
+            <StatusBadge statut={data.statutActuel} />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span className="tracking-code-pill">{data.trackingCode}</span>
+            <span className="helper-text">
+              {data.pointDepart} → {data.pointLivraison} · délai estimé {data.delaiEstime}
+            </span>
+          </div>
+        </div>
+      </div>
 
-      <TrackingMap points={points} />
+      <div className="suivi-content">
+        <div className="card" style={{ marginBottom: 20 }}>
+          <p>{data.description}</p>
+        </div>
 
-      <h2>Historique</h2>
-      <ul>
-        {data.evenements.map((ev, i) => (
-          <li key={i}>
-            {new Date(ev.createdAt).toLocaleString()} — <strong>{ev.statut}</strong> : {ev.message}
-            {ev.localisation ? ` (${ev.localisation})` : ""}
-          </li>
-        ))}
-      </ul>
+        <div className="map-card" style={{ marginBottom: 20 }}>
+          <TrackingMap points={points} />
+        </div>
+
+        <div className="card">
+          <h2 className="card-title">Historique</h2>
+          <ul className="timeline">
+            {data.evenements.map((ev, i) => (
+              <li key={i} className={`timeline-item${i === data.evenements.length - 1 ? "" : " is-muted"}`}>
+                <div className="timeline-dot" />
+                <div className="timeline-content">
+                  <div className="timeline-date">{new Date(ev.createdAt).toLocaleString()}</div>
+                  <StatusBadge statut={ev.statut} />
+                  <div className="timeline-message">
+                    {ev.message}
+                    {ev.localisation ? ` · ${ev.localisation}` : ""}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }

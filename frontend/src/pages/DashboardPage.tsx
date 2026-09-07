@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../api/client";
 import { STATUTS } from "../api/types";
-import type { Commande, StatutCommande } from "../api/types";
+import type { Commande, Entreprise, StatutCommande } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 
 export function DashboardPage() {
@@ -27,7 +28,10 @@ export function DashboardPage() {
     <div style={{ maxWidth: 960, margin: "40px auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h1>Commandes {auth?.nom ? `— ${auth.nom}` : ""}</h1>
-        <button onClick={logout}>Déconnexion</button>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {auth?.role === "admin" && <Link to="/admin/entreprises">Entreprises</Link>}
+          <button onClick={logout}>Déconnexion</button>
+        </div>
       </div>
 
       <CreateCommandeForm isAdmin={auth?.role === "admin"} onCreated={refresh} />
@@ -83,6 +87,13 @@ function CreateCommandeForm({
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [entreprises, setEntreprises] = useState<Entreprise[]>([]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      api.get<Entreprise[]>("/admin/entreprises").then(({ data }) => setEntreprises(data));
+    }
+  }, [isAdmin]);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -122,12 +133,20 @@ function CreateCommandeForm({
       <legend>Nouvelle commande</legend>
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 8, gridTemplateColumns: "1fr 1fr" }}>
         {isAdmin && (
-          <input
-            placeholder="ID entreprise"
+          <select
             value={form.entrepriseId}
             onChange={(e) => set("entrepriseId", e.target.value)}
             required
-          />
+          >
+            <option value="" disabled>
+              Choisir une entreprise
+            </option>
+            {entreprises.map((ent) => (
+              <option key={ent.id} value={ent.id}>
+                {ent.nom}
+              </option>
+            ))}
+          </select>
         )}
         <input
           placeholder="Nom du client"

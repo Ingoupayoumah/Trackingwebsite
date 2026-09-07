@@ -28,6 +28,16 @@ export interface TrackingEvent {
   createdAt: string;
 }
 
+export type StatutEntreprise = "ACTIF" | "SUSPENDU";
+
+export interface Entreprise {
+  id: string;
+  email: string;
+  nom: string;
+  statut: StatutEntreprise;
+  createdAt: string;
+}
+
 export interface Commande {
   id: string;
   trackingCode: string;

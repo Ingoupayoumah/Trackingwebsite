@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { AdminEntreprisesPage } from "./pages/AdminEntreprisesPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SuiviPage } from "./pages/SuiviPage";
 
@@ -21,6 +22,7 @@ function ProtectedRoute({
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route
         path="/dashboard"
@@ -39,7 +41,7 @@ export default function App() {
         }
       />
       <Route path="/suivi/:trackingCode" element={<SuiviPage />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

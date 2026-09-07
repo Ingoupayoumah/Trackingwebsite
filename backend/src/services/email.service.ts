@@ -28,7 +28,16 @@ async function send(to: string, subject: string, html: string) {
     console.warn(`[email] RESEND_API_KEY manquant — email non envoyé à ${to}: ${subject}`);
     return;
   }
-  await resend.emails.send({ from: env.emailFrom, to, subject, html });
+  // Un échec d'envoi (domaine pas encore vérifié, quota, etc.) ne doit jamais faire
+  // échouer la création/mise à jour de la commande qui a déclenché l'email.
+  try {
+    const result = await resend.emails.send({ from: env.emailFrom, to, subject, html });
+    if (result.error) {
+      console.error(`[email] échec d'envoi à ${to}:`, result.error);
+    }
+  } catch (err) {
+    console.error(`[email] échec d'envoi à ${to}:`, err);
+  }
 }
 
 export async function sendCommandeCreeeEmail(params: CommandeCreeeParams) {

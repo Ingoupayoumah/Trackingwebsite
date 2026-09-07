@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StatutEntreprise {
+  ACTIF
+  SUSPENDU
+}
+
+enum StatutCommande {
+  CREEE
+  EN_PREPARATION
+  EN_TRANSIT
+  EN_LIVRAISON
+  LIVREE
+  PROBLEME
+  ANNULEE
+}
+
+enum CreateurCommande {
+  ADMIN
+  ENTREPRISE
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  entreprises Entreprise[]
+}
+
+model Entreprise {
+  id           String           @id @default(cuid())
+  email        String           @unique
+  passwordHash String
+  nom          String
+  adresse      String?
+  telephone    String?
+  statut       StatutEntreprise @default(ACTIF)
+  createdAt    DateTime         @default(now())
+
+  creeParAdminId String
+  creeParAdmin   Admin  @relation(fields: [creeParAdminId], references: [id])
+
+  commandes Commande[]
+}
+
+model Commande {
+  id            String   @id @default(cuid())
+  trackingCode  String   @unique
+
+  entrepriseId String
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+  creePar      CreateurCommande
+
+  clientNom       String
+  clientEmail     String
+  clientTelephone String?
+
+  pointDepart     String
+  pointDepartLat  Float?
+  pointDepartLng  Float?
+
+  pointLivraison    String
+  pointLivraisonLat Float?
+  pointLivraisonLng Float?
+
+  description  String
+  prix         Float
+  delaiEstime  String
+
+  statutActuel StatutCommande @default(CREEE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  evenements TrackingEvent[]
+
+  @@index([entrepriseId])
+  @@index([clientEmail])
+}
+
+model TrackingEvent {
+  id         String         @id @default(cuid())
+  commandeId String
+  commande   Commande       @relation(fields: [commandeId], references: [id], onDelete: Cascade)
+
+  statut      StatutCommande
+  message     String
+  localisation String?
+  latitude     Float?
+  longitude    Float?
+
+  notifie   Boolean   @default(false)
+  notifieAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([commandeId])
+}

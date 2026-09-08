@@ -4,7 +4,7 @@ import { api } from "../api/client";
 import { STATUTS } from "../api/types";
 import type { Commande, Entreprise, StatutCommande } from "../api/types";
 import { Navbar } from "../components/Navbar";
-import { StatusBadge } from "../components/StatusBadge";
+import { StatusBadge, STATUT_LABELS } from "../components/StatusBadge";
 import { useAuth } from "../context/AuthContext";
 
 export function DashboardPage() {
@@ -325,25 +325,26 @@ function CommandeDetail({ commande, onUpdated }: { commande: Commande; onUpdated
             >
               {STATUTS.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {STATUT_LABELS[s]}
                 </option>
               ))}
             </select>
           </div>
           <div className="field">
-            <label>Localisation (optionnel)</label>
+            <label>{statut === "EN_ARRET" ? "Ville de l'arrêt" : "Localisation (optionnel)"}</label>
             <input
               className="input"
-              placeholder="ex: Centre de tri Lyon"
+              placeholder={statut === "EN_ARRET" ? "ex: Lyon" : "ex: Centre de tri Lyon"}
               value={localisation}
               onChange={(e) => setLocalisation(e.target.value)}
+              required={statut === "EN_ARRET"}
             />
           </div>
           <div className="field span-2">
-            <label>Message</label>
+            <label>{statut === "EN_ARRET" ? "Cause de l'arrêt" : "Message"}</label>
             <input
               className="input"
-              placeholder="ex: colis arrivé au centre de tri"
+              placeholder={statut === "EN_ARRET" ? "ex: Panne du véhicule" : "ex: colis arrivé au centre de tri"}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               required

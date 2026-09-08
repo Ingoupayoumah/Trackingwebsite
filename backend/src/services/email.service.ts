@@ -27,7 +27,10 @@ interface StatutMisAJourParams {
 const STATUT_LABELS: Record<string, string> = {
   CREEE: "Créée",
   EN_PREPARATION: "En préparation",
+  COLISAGE: "Colisage",
+  CHARGEMENT: "Chargement",
   EN_TRANSIT: "En transit",
+  EN_ARRET: "En arrêt",
   EN_LIVRAISON: "En livraison",
   LIVREE: "Livrée",
   PROBLEME: "Problème",

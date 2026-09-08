@@ -1,7 +1,10 @@
 export type StatutCommande =
   | "CREEE"
   | "EN_PREPARATION"
+  | "COLISAGE"
+  | "CHARGEMENT"
   | "EN_TRANSIT"
+  | "EN_ARRET"
   | "EN_LIVRAISON"
   | "LIVREE"
   | "PROBLEME"
@@ -10,7 +13,10 @@ export type StatutCommande =
 export const STATUTS: StatutCommande[] = [
   "CREEE",
   "EN_PREPARATION",
+  "COLISAGE",
+  "CHARGEMENT",
   "EN_TRANSIT",
+  "EN_ARRET",
   "EN_LIVRAISON",
   "LIVREE",
   "PROBLEME",

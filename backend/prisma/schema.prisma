@@ -19,7 +19,10 @@ enum StatutEntreprise {
 enum StatutCommande {
   CREEE
   EN_PREPARATION
+  COLISAGE
+  CHARGEMENT
   EN_TRANSIT
+  EN_ARRET
   EN_LIVRAISON
   LIVREE
   PROBLEME

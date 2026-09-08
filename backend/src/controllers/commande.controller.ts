@@ -114,7 +114,10 @@ const addEventSchema = z.object({
   statut: z.enum([
     "CREEE",
     "EN_PREPARATION",
+    "COLISAGE",
+    "CHARGEMENT",
     "EN_TRANSIT",
+    "EN_ARRET",
     "EN_LIVRAISON",
     "LIVREE",
     "PROBLEME",

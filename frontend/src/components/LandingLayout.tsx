@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -10,26 +11,39 @@ const NAV_LINKS = [
 
 export function LandingLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="page">
       <div className="landing-navbar">
         <div className="landing-navbar-inner">
-          <Link to="/" className="brand">
+          <Link to="/" className="brand" onClick={() => setMenuOpen(false)}>
             <span className="brand-mark">GP</span>
             Golden Pet Transport
           </Link>
-          <div className="landing-nav-links">
+          <button
+            type="button"
+            className="nav-toggle"
+            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+          <div className={`landing-nav-links${menuOpen ? " open" : ""}`}>
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
                 className={location.pathname === link.to ? "active" : ""}
+                onClick={() => setMenuOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <Link to="/login" className="btn btn-outline btn-sm">
+            <Link to="/login" className="btn btn-outline btn-sm" onClick={() => setMenuOpen(false)}>
               Espace entreprise
             </Link>
           </div>

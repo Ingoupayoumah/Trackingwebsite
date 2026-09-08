@@ -27,7 +27,6 @@ export function LandingPage() {
       <div className="hero" style={{ backgroundImage: `url(${heroBg})` }}>
         <div className="hero-inner">
           <div className="hero-text">
-            <span className="hero-eyebrow">📍 Basé à Strasbourg, France</span>
             <h1>Vos colis livrés à temps, suivis à chaque étape</h1>
             <p className="lead">
               Golden Pet Transport prend en charge le transport de vos colis partout en France :

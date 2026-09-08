@@ -47,7 +47,7 @@ export function CommentCaMarchePage() {
           <Link to="/contact" className="btn btn-primary">
             Demander un devis
           </Link>
-          <Link to="/suivre" className="btn btn-outline" style={{ background: "transparent", borderColor: "rgba(255,255,255,0.3)", color: "white" }}>
+          <Link to="/suivre" className="btn btn-outline">
             Suivre mon colis
           </Link>
         </div>

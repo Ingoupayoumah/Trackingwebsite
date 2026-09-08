@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import heroDelivery from "../assets/hero-delivery.jpg";
+import heroBg from "../assets/hero-bg.png";
 import { LandingLayout } from "../components/LandingLayout";
 
 const FEATURES = [
@@ -23,7 +23,7 @@ const FEATURES = [
 export function LandingPage() {
   return (
     <LandingLayout>
-      <div className="hero">
+      <div className="hero" style={{ backgroundImage: `url(${heroBg})` }}>
         <div className="hero-inner">
           <div className="hero-text">
             <span className="hero-eyebrow">📍 Basé à Strasbourg, France</span>
@@ -42,14 +42,10 @@ export function LandingPage() {
               </Link>
             </div>
           </div>
-          <div className="hero-photo">
-            <img
-              src={heroDelivery}
-              alt="Chargement de colis dans une camionnette de livraison"
-            />
-          </div>
         </div>
+      </div>
 
+      <div className="stats-section">
         <div className="stats-row">
           <div>
             <div className="stat-number">2 500+</div>

@@ -558,48 +558,92 @@ table.table tr:hover td {
 }
 
 .hero {
-  background: linear-gradient(180deg, #fff8f4 0%, var(--color-bg) 100%);
-  padding: 64px 24px 56px;
+  position: relative;
+  min-height: 620px;
+  display: flex;
+  align-items: center;
+  padding: 100px 24px 72px;
+  background-size: cover;
+  background-position: center right;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: linear-gradient(
+    100deg,
+    rgba(12, 12, 14, 0.88) 0%,
+    rgba(12, 12, 14, 0.6) 40%,
+    rgba(12, 12, 14, 0.18) 68%,
+    rgba(12, 12, 14, 0.02) 88%
+  );
 }
 
 .hero-inner {
   max-width: 1120px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 440px;
-  gap: 48px;
-  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-text {
+  max-width: 560px;
   text-align: left;
+  animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-text {
+    animation: none;
+  }
 }
 
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--color-primary-bg);
-  color: var(--color-primary-dark);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
   font-weight: 700;
   font-size: 13px;
-  padding: 6px 16px;
+  padding: 7px 16px;
   border-radius: var(--radius-pill);
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .hero h1 {
-  font-size: 44px;
-  line-height: 1.1;
+  font-size: 46px;
+  line-height: 1.12;
   margin-bottom: 18px;
+  color: #ffffff;
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.35);
 }
 
 .hero p.lead {
   font-size: 17px;
-  color: var(--color-text-muted);
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 32px;
-  line-height: 1.55;
-  max-width: 520px;
+  line-height: 1.6;
+  max-width: 480px;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
 }
 
 .hero-actions {
@@ -610,22 +654,34 @@ table.table tr:hover td {
 }
 
 .hero-actions .btn {
-  padding: 13px 26px;
+  padding: 14px 28px;
   font-size: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.hero-photo {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-pop);
-  aspect-ratio: 4 / 5;
+.hero-actions .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(255, 107, 43, 0.35);
 }
 
-.hero-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.hero-actions .btn-outline {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #ffffff;
+}
+
+.hero-actions .btn-outline:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+.stats-section {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 40px 24px;
 }
 
 .track-box {
@@ -649,7 +705,7 @@ table.table tr:hover td {
 
 .stats-row {
   max-width: 1120px;
-  margin: 56px auto 0;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
@@ -893,10 +949,22 @@ table.table tr:hover td {
 }
 
 @media (max-width: 900px) {
-  .hero-inner {
-    grid-template-columns: 1fr;
+  .hero {
+    min-height: 520px;
+    background-position: center 30%;
+  }
+  .hero::before {
+    /* Sur mobile l'image est recadrée bien plus serré : un voile uniforme
+       plus sombre garde le texte lisible sur n'importe quelle partie de la photo. */
+    background-image: linear-gradient(
+      180deg,
+      rgba(12, 12, 14, 0.55) 0%,
+      rgba(12, 12, 14, 0.75) 60%,
+      rgba(12, 12, 14, 0.85) 100%
+    );
   }
   .hero-text {
+    max-width: 100%;
     text-align: center;
   }
   .hero-text p.lead {
@@ -905,10 +973,6 @@ table.table tr:hover td {
   }
   .hero-actions {
     justify-content: center;
-  }
-  .hero-photo {
-    aspect-ratio: 16 / 9;
-    order: -1;
   }
 }
 

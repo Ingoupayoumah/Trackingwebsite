@@ -40,6 +40,9 @@ export function SuivreLookupPage() {
             Voir le suivi
           </button>
         </form>
+        <Link to="/" className="helper-text" style={{ display: "block", textAlign: "center", marginTop: 20 }}>
+          ← Retour à l'accueil
+        </Link>
       </div>
     </div>
   );

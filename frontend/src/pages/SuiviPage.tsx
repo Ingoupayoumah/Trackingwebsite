@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
 import { TrackingMap } from "../components/TrackingMap";
 import type { TrackingPoint } from "../components/TrackingMap";
@@ -82,10 +82,10 @@ export function SuiviPage() {
     return (
       <div className="auth-page">
         <div className="auth-card">
-          <div className="brand">
-            <span className="brand-mark">TF</span>
-            TrackFlow
-          </div>
+          <Link to="/" className="brand">
+            <span className="brand-mark">GP</span>
+            Golden Pet Transport
+          </Link>
           <h1>Suivre mon colis</h1>
           <p className="helper-text" style={{ textAlign: "center", marginBottom: 20 }}>
             Code : <span className="tracking-code-pill">{trackingCode}</span>
@@ -102,12 +102,19 @@ export function SuiviPage() {
                 required
                 autoFocus
               />
+              <p className="helper-text" style={{ marginTop: 2 }}>
+                L'adresse email doit correspondre à celle utilisée lors de la création de
+                votre commande — c'est ce qui protège la confidentialité de votre suivi.
+              </p>
             </div>
             {error && <p className="form-error">{error}</p>}
             <button type="submit" className="btn btn-primary btn-block" disabled={busy}>
               {busy ? "Vérification..." : "Voir le suivi"}
             </button>
           </form>
+          <Link to="/" className="helper-text" style={{ display: "block", textAlign: "center", marginTop: 20 }}>
+            ← Retour à l'accueil
+          </Link>
         </div>
       </div>
     );
@@ -139,14 +146,22 @@ export function SuiviPage() {
     <div className="page">
       <div className="suivi-hero">
         <div className="suivi-hero-inner">
-          <div className="brand" style={{ marginBottom: 20 }}>
-            <span className="brand-mark">TF</span>
-            TrackFlow
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+            <Link to="/" className="brand">
+              <span className="brand-mark">GP</span>
+              Golden Pet Transport
+            </Link>
+            <Link to="/" className="btn btn-outline btn-sm">
+              ← Accueil
+            </Link>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 6 }}>
             <h1>{data.entrepriseNom}</h1>
             <StatusBadge statut={data.statutActuel} />
           </div>
+          <p className="helper-text" style={{ marginBottom: 14 }}>
+            Suivi en temps réel de votre colis — cette page se met à jour à chaque nouvelle étape.
+          </p>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <span className="tracking-code-pill">{data.trackingCode}</span>
             <span className="helper-text">
@@ -158,6 +173,7 @@ export function SuiviPage() {
 
       <div className="suivi-content">
         <div className="card" style={{ marginBottom: 20 }}>
+          <h4 style={{ marginBottom: 6 }}>Description du colis</h4>
           <p>{data.description}</p>
         </div>
 
@@ -167,6 +183,10 @@ export function SuiviPage() {
 
         <div className="card">
           <h2 className="card-title">Historique</h2>
+          <p className="helper-text" style={{ marginTop: -10, marginBottom: 16 }}>
+            Chaque étape ci-dessous est ajoutée par {data.entrepriseNom} au fur et à mesure du
+            transport, de la prise en charge jusqu'à la livraison.
+          </p>
           <ul className="timeline">
             {data.evenements.map((ev, i) => (
               <li key={i} className={`timeline-item${i === data.evenements.length - 1 ? "" : " is-muted"}`}>

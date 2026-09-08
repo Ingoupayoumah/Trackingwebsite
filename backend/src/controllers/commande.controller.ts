@@ -76,6 +76,9 @@ export async function createCommande(req: Request, res: Response) {
     clientNom: commande.clientNom,
     entrepriseNom: entreprise.nom,
     trackingCode: commande.trackingCode,
+    pointDepart: commande.pointDepart,
+    pointLivraison: commande.pointLivraison,
+    delaiEstime: commande.delaiEstime,
   });
 
   res.status(201).json(commande);

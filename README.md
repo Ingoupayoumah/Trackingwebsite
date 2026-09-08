@@ -40,6 +40,7 @@ _Dernière mise à jour : 2026-09-08_
 - Backend configuré avec la clé API Resend en production
 
 ### 📋 Pistes pour la suite
+- **Réception d'email sur `tracking@goldenpettransport.org`** — actuellement l'adresse peut seulement envoyer (Resend), pas recevoir. Plan : créer un compte gratuit sur [ImprovMX](https://improvmx.com) (avec `ingoupayoumah@gmail.com`), ajouter le domaine, créer une règle `tracking` → `ingoupayoumah@gmail.com`, puis ajouter les 2 enregistrements DNS (MX + TXT) fournis dans Vercel. Aucun conflit attendu avec les enregistrements Resend existants (tous sur le sous-domaine `send.`, pas sur la racine).
 - Compléter les informations d'immatriculation réelles sur la page Mentions légales (SIRET, forme juridique, RCS, directeur de publication)
 - Contenu de la landing page à affiner si besoin (chiffres, textes actuellement des exemples)
 - Fonctionnalités possibles : statistiques pour les entreprises, gestion multi-utilisateurs par entreprise, etc.

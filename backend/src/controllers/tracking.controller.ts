@@ -74,32 +74,42 @@ export async function verifierSuivi(req: Request, res: Response) {
 
 // GET /suivi/:trackingCode — réutilise la session posée par /verifier (cookie), ou le
 // lien magique inclus dans les emails (?token=...) pour éviter de redemander l'email.
+async function commandeForToken(token: string | undefined, trackingCode: string) {
+  if (!token) return null;
+  try {
+    const payload = verifyClientSession(token);
+    const commande = await prisma.commande.findUnique({
+      where: { id: payload.commandeId },
+      include: { evenements: { orderBy: { createdAt: "asc" } }, entreprise: { select: { nom: true } } },
+    });
+    if (commande && commande.trackingCode === trackingCode) return commande;
+  } catch {
+    // token invalide/expiré : traité comme absent, on essaie l'autre source ci-dessous
+  }
+  return null;
+}
+
 export async function getSuivi(req: Request, res: Response) {
   const cookieToken = req.cookies?.[SESSION_COOKIE];
   const magicToken = typeof req.query.token === "string" ? req.query.token : undefined;
-  const token = cookieToken ?? magicToken;
-  if (!token) throw new HttpError(401, "Vérification requise");
+  const trackingCode = req.params.trackingCode;
 
-  let payload;
-  try {
-    payload = verifyClientSession(token);
-  } catch {
-    throw new HttpError(401, "Session expirée, vérifiez à nouveau votre email");
+  // Le cookie peut appartenir à une AUTRE commande consultée précédemment dans
+  // ce même navigateur (SameSite=None : envoyé sur tout appel vers le backend,
+  // pas seulement la page d'origine) — dans ce cas on retente avec le lien
+  // magique de l'email plutôt que d'échouer directement.
+  let commande = await commandeForToken(cookieToken, trackingCode);
+  let usedMagicToken = false;
+  if (!commande && magicToken) {
+    commande = await commandeForToken(magicToken, trackingCode);
+    usedMagicToken = true;
   }
+  if (!commande) throw new HttpError(401, "Vérification requise");
 
-  const commande = await prisma.commande.findUnique({
-    where: { id: payload.commandeId },
-    include: { evenements: { orderBy: { createdAt: "asc" } }, entreprise: { select: { nom: true } } },
-  });
-  if (!commande || commande.trackingCode !== req.params.trackingCode) {
-    throw new HttpError(401, "Vérification requise");
-  }
-
-  // Premier accès via le lien magique de l'email : on pose le cookie pour que
-  // les visites suivantes (rafraîchissement, retour sur le site) n'aient plus
-  // besoin du token dans l'URL.
-  if (magicToken && !cookieToken) {
-    setSessionCookie(res, magicToken);
+  // Premier accès via le lien magique de l'email : on pose le cookie (propre à
+  // cette commande) pour que les visites suivantes n'aient plus besoin du token.
+  if (usedMagicToken) {
+    setSessionCookie(res, magicToken!);
   }
 
   res.json(serialize(commande));

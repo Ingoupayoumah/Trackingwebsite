@@ -1,38 +1,46 @@
 # Plateforme de tracking logistique
 
 ## État du projet
-_Dernière mise à jour : 2026-09-07_
+_Dernière mise à jour : 2026-09-08_
+
+### 🚀 En ligne et fonctionnel
+- **Frontend (production)** : https://trackingwebsite-8aju.vercel.app
+- **Backend (production)** : https://trackingwebsite-seven.vercel.app
+- Testé de bout en bout en production : connexion admin, création d'entreprise, création de commande (avec géocodage), suivi public avec carte — tout fonctionne sur les vraies URLs déployées
 
 ### ✅ Architecture & Backend
-- API Express + TypeScript + Prisma + PostgreSQL, structure complète (auth, contrôleurs, routes, middlewares)
+- API Express + TypeScript + Prisma + PostgreSQL, déployée en fonction serverless sur Vercel (`backend/api/index.ts`)
 - 3 profils fonctionnels : **Admin** (crée les entreprises), **Entreprise** (crée/gère les commandes), **Client** (suivi via tracking code + email, sans compte)
 - Tracking code généré automatiquement, historique complet des événements (`TrackingEvent`)
 - Géocodage automatique des adresses (Nominatim/OpenStreetMap) pour la carte
-- Sécurité : rate limiting sur le suivi public, sessions séparées, échecs d'email non-bloquants
+- Sécurité : rate limiting sur le suivi public, sessions séparées (cookie cross-site `SameSite=None` en prod), échecs d'email non-bloquants
+- Client Prisma mis en cache sur `globalThis` pour les invocations serverless "chaudes"
 
 ### ✅ Frontend
 - Login, Dashboard (commandes), page admin (gestion des entreprises), page de suivi client avec carte Leaflet
 - Landing page premium à la racine (`/`) : hero 2 colonnes avec photo réaliste, services, étapes, stats, CTA
-- Page dédiée `/suivre` pour la recherche de tracking code
+- Pages dédiées : `/services`, `/comment-ca-marche`, `/contact`, `/suivre`
+- Pages légales RGPD : `/politique-de-confidentialite`, `/mentions-legales` (infos d'immatriculation à compléter avant mise en ligne officielle)
 - Design system complet inspiré d'AfterShip (Poppins, orange `#FF6B2B`, cartes, badges de statut, timeline)
 - SEO de base en place (meta title/description, Open Graph, `lang="fr"`)
+- Rewrite SPA (`vercel.json`) pour que les routes React Router fonctionnent en accès direct sur Vercel
 
 ### ✅ Base de données
-- PostgreSQL installé et configuré localement (`localhost:5432`, base `tracking`)
-- Migrations appliquées, compte admin seedé
+- **Production** : Neon (PostgreSQL serverless), projet `sparkling-sun-50982106`, connexion pooled + directe configurée pour les migrations
+- **Local (dev)** : PostgreSQL installé localement (`localhost:5432`, base `tracking`)
+- Migrations appliquées sur les deux, comptes admin seedés (prod : `admin@goldenpettransport.org`)
 
 ### ✅ Git / GitHub
 - Dépôt : [github.com/Ingoupayoumah/Trackingwebsite](https://github.com/Ingoupayoumah/Trackingwebsite)
-- Tout le travail est commité et poussé au fil des mises à jour
+- Déploiement automatique sur Vercel à chaque push sur `main` (frontend + backend, projets séparés)
 
-### 🟡 En cours — Domaine email (Resend)
-- Domaine `goldenpettransport.org` acheté via Vercel
-- Les 4 enregistrements DNS (DKIM, MX, SPF, DMARC) sont correctement configurés dans Vercel
-- Vérification Resend toujours en attente (`pending`) — surveillance automatique en cours
-- Backend déjà configuré avec la clé API Resend — dès que le domaine passe "verified", les emails partiront automatiquement sans rien reconfigurer
+### ✅ Email (Resend)
+- Domaine `goldenpettransport.org` vérifié sur Resend — envoi d'emails réels opérationnel
+- Backend configuré avec la clé API Resend en production
 
 ### 📋 Pistes pour la suite
-- Une fois le domaine vérifié : tester l'envoi réel d'emails de bout en bout
+- Attacher `goldenpettransport.org` comme domaine personnalisé sur le projet frontend (actuellement sur une URL `*.vercel.app`)
+- Compléter les informations d'immatriculation réelles sur la page Mentions légales (SIRET, forme juridique, RCS, directeur de publication)
 - Contenu de la landing page à affiner si besoin (chiffres, textes actuellement des exemples)
 - Fonctionnalités possibles : statistiques pour les entreprises, gestion multi-utilisateurs par entreprise, etc.
 

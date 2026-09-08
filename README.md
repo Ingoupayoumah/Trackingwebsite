@@ -4,9 +4,10 @@
 _Dernière mise à jour : 2026-09-08_
 
 ### 🚀 En ligne et fonctionnel
-- **Frontend (production)** : https://trackingwebsite-8aju.vercel.app
+- **Site (domaine personnalisé)** : https://www.goldenpettransport.org (apex `goldenpettransport.org` redirige vers `www`)
+- **Frontend (URL Vercel)** : https://trackingwebsite-8aju.vercel.app
 - **Backend (production)** : https://trackingwebsite-seven.vercel.app
-- Testé de bout en bout en production : connexion admin, création d'entreprise, création de commande (avec géocodage), suivi public avec carte — tout fonctionne sur les vraies URLs déployées
+- Testé de bout en bout en production, y compris sur le domaine personnalisé : connexion admin, création d'entreprise, création de commande (avec géocodage), suivi public avec carte — tout fonctionne
 
 ### ✅ Architecture & Backend
 - API Express + TypeScript + Prisma + PostgreSQL, déployée en fonction serverless sur Vercel (`backend/api/index.ts`)
@@ -39,7 +40,6 @@ _Dernière mise à jour : 2026-09-08_
 - Backend configuré avec la clé API Resend en production
 
 ### 📋 Pistes pour la suite
-- Attacher `goldenpettransport.org` comme domaine personnalisé sur le projet frontend (actuellement sur une URL `*.vercel.app`)
 - Compléter les informations d'immatriculation réelles sur la page Mentions légales (SIRET, forme juridique, RCS, directeur de publication)
 - Contenu de la landing page à affiner si besoin (chiffres, textes actuellement des exemples)
 - Fonctionnalités possibles : statistiques pour les entreprises, gestion multi-utilisateurs par entreprise, etc.

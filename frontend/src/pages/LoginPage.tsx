@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export function LoginPage() {
@@ -33,6 +33,10 @@ export function LoginPage() {
           TrackFlow
         </div>
         <h1>Connexion</h1>
+        <p className="helper-text" style={{ textAlign: "center", marginBottom: 20 }}>
+          Cet espace est réservé aux entreprises de transport partenaires et aux administrateurs
+          de la plateforme, pour créer et gérer les commandes de leurs clients.
+        </p>
         <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div className="field">
             <label>Email</label>
@@ -62,6 +66,13 @@ export function LoginPage() {
             {busy ? "Connexion..." : "Se connecter"}
           </button>
         </form>
+        <p className="helper-text" style={{ textAlign: "center", marginTop: 20 }}>
+          Vous êtes client et cherchez à suivre un colis ?{" "}
+          <Link to="/suivre">Accédez au suivi ici</Link> — aucune connexion n'est nécessaire.
+        </p>
+        <Link to="/" className="helper-text" style={{ display: "block", textAlign: "center", marginTop: 10 }}>
+          ← Retour à l'accueil
+        </Link>
       </div>
     </div>
   );

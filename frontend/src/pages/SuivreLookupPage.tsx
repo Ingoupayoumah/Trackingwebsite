@@ -1,8 +1,14 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useSeo } from "../hooks/useSeo";
 
 export function SuivreLookupPage() {
+  useSeo(
+    "Suivre mon colis — Golden Pet Transport",
+    "Entrez votre code de suivi pour connaître en temps réel l'état de votre livraison Golden Pet Transport, sans créer de compte."
+  );
+
   const [trackingCode, setTrackingCode] = useState("");
   const navigate = useNavigate();
 

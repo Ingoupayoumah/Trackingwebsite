@@ -6,6 +6,7 @@ import { TrackingMap } from "../components/TrackingMap";
 import type { TrackingPoint } from "../components/TrackingMap";
 import { StatusBadge } from "../components/StatusBadge";
 import type { StatutCommande } from "../api/types";
+import { useSeo } from "../hooks/useSeo";
 
 interface SuiviData {
   trackingCode: string;
@@ -39,6 +40,13 @@ export function SuiviPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+
+  useSeo(
+    data ? `Suivi ${data.trackingCode} — ${data.entrepriseNom}` : `Suivi de colis ${trackingCode ?? ""} — Golden Pet Transport`,
+    data
+      ? `Suivi en temps réel de votre colis ${data.trackingCode} avec ${data.entrepriseNom} : ${data.pointDepart} → ${data.pointLivraison}.`
+      : "Suivez votre colis Golden Pet Transport en temps réel avec votre code de suivi."
+  );
 
   useEffect(() => {
     const url = magicToken

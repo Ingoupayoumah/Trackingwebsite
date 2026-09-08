@@ -1,10 +1,16 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { LandingLayout } from "../components/LandingLayout";
+import { useSeo } from "../hooks/useSeo";
 
 const CONTACT_EMAIL = "tracking@goldenpettransport.org";
 
 export function ContactPage() {
+  useSeo(
+    "Contact — Golden Pet Transport",
+    "Contactez Golden Pet Transport pour un devis de transport de colis ou toute question sur une livraison en cours. Basé à Strasbourg, service dans toute la France."
+  );
+
   const [form, setForm] = useState({ nom: "", email: "", message: "" });
 
   function set<K extends keyof typeof form>(key: K, value: string) {

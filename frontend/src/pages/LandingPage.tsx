@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import heroBg from "../assets/hero-bg.png";
 import { LandingLayout } from "../components/LandingLayout";
+import { useSeo } from "../hooks/useSeo";
 import { IconMapPin, IconPackage, IconTruck } from "../components/icons";
 
 const FEATURES = [
@@ -22,6 +23,11 @@ const FEATURES = [
 ];
 
 export function LandingPage() {
+  useSeo(
+    "Golden Pet Transport — Transport et suivi de colis en temps réel",
+    "Golden Pet Transport assure le transport et la livraison de vos colis partout en France, avec un suivi en temps réel accessible à tout moment. Basé à Strasbourg."
+  );
+
   return (
     <LandingLayout>
       <div className="hero" style={{ backgroundImage: `url(${heroBg})` }}>

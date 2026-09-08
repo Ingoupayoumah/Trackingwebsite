@@ -1,6 +1,12 @@
 import { LandingLayout } from "../components/LandingLayout";
+import { useSeo } from "../hooks/useSeo";
 
 export function PrivacyPolicyPage() {
+  useSeo(
+    "Politique de confidentialité — Golden Pet Transport",
+    "Comment Golden Pet Transport collecte, utilise et protège vos données personnelles dans le cadre du transport et du suivi de colis, conformément au RGPD."
+  );
+
   return (
     <LandingLayout>
       <div className="legal-content">

@@ -1,6 +1,12 @@
 import { LandingLayout } from "../components/LandingLayout";
+import { useSeo } from "../hooks/useSeo";
 
 export function LegalNoticePage() {
+  useSeo(
+    "Mentions légales — Golden Pet Transport",
+    "Mentions légales de Golden Pet Transport : éditeur du site, hébergement, propriété intellectuelle."
+  );
+
   return (
     <LandingLayout>
       <div className="legal-content">

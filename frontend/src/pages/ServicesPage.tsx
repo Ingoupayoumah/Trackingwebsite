@@ -1,34 +1,42 @@
 import { Link } from "react-router-dom";
 import { LandingLayout } from "../components/LandingLayout";
+import {
+  IconClock,
+  IconMail,
+  IconMapPin,
+  IconPackage,
+  IconShieldCheck,
+  IconTruck,
+} from "../components/icons";
 
 const FEATURES = [
   {
-    icon: "📦",
+    icon: IconPackage,
     title: "Livraison porte-à-porte",
     text: "Votre colis est enlevé directement à l'adresse convenue et livré chez le destinataire, sans rupture de charge ni passage par un point relais.",
   },
   {
-    icon: "📍",
+    icon: IconMapPin,
     title: "Suivi GPS en temps réel",
     text: "Chaque étape du trajet est géolocalisée et visible sur une carte interactive, du départ jusqu'à la livraison finale.",
   },
   {
-    icon: "🚚",
+    icon: IconTruck,
     title: "Chauffeurs professionnels et assurés",
     text: "Une équipe expérimentée, des véhicules entretenus et une couverture assurance sur l'ensemble des trajets.",
   },
   {
-    icon: "✉️",
+    icon: IconMail,
     title: "Notifications automatiques",
     text: "Le destinataire reçoit un email à chaque étape clé (prise en charge, transit, livraison), sans avoir besoin de créer de compte.",
   },
   {
-    icon: "🕒",
+    icon: IconClock,
     title: "Délais annoncés à l'avance",
     text: "Un délai estimé est communiqué dès la création de la commande, et mis à jour si la situation évolue.",
   },
   {
-    icon: "🔒",
+    icon: IconShieldCheck,
     title: "Accès sécurisé au suivi",
     text: "Le suivi n'est accessible qu'en combinant le code de suivi et l'email du destinataire, pour protéger la confidentialité de chaque envoi.",
   },
@@ -49,7 +57,9 @@ export function ServicesPage() {
         <div className="feature-grid">
           {FEATURES.map((f) => (
             <div className="feature-card" key={f.title}>
-              <div className="feature-icon">{f.icon}</div>
+              <div className="feature-icon">
+                <f.icon />
+              </div>
               <h3>{f.title}</h3>
               <p>{f.text}</p>
             </div>

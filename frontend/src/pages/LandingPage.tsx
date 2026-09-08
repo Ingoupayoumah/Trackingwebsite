@@ -1,20 +1,21 @@
 import { Link } from "react-router-dom";
 import heroBg from "../assets/hero-bg.png";
 import { LandingLayout } from "../components/LandingLayout";
+import { IconMapPin, IconPackage, IconTruck } from "../components/icons";
 
 const FEATURES = [
   {
-    icon: "📦",
+    icon: IconPackage,
     title: "Livraison porte-à-porte",
     text: "Votre colis est enlevé à l'adresse convenue et livré directement à destination, sans rupture de charge.",
   },
   {
-    icon: "📍",
+    icon: IconMapPin,
     title: "Suivi GPS en temps réel",
     text: "Chaque étape du trajet est visible sur une carte interactive, du départ jusqu'à la livraison.",
   },
   {
-    icon: "🚚",
+    icon: IconTruck,
     title: "Chauffeurs professionnels et assurés",
     text: "Une équipe expérimentée et des véhicules équipés pour transporter vos marchandises en toute sécurité.",
   },
@@ -71,7 +72,9 @@ export function LandingPage() {
         <div className="feature-grid">
           {FEATURES.map((f) => (
             <div className="feature-card" key={f.title}>
-              <div className="feature-icon">{f.icon}</div>
+              <div className="feature-icon">
+                <f.icon />
+              </div>
               <h3>{f.title}</h3>
               <p>{f.text}</p>
             </div>

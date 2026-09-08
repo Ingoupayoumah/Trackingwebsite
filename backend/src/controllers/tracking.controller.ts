@@ -44,6 +44,20 @@ function serialize(commande: Awaited<ReturnType<typeof findCommandeByCode>>) {
   };
 }
 
+function setSessionCookie(res: Response, token: string) {
+  const isProd = process.env.NODE_ENV === "production";
+  res.cookie(SESSION_COOKIE, token, {
+    httpOnly: true,
+    // En prod, frontend et backend vivent sur des domaines Vercel différents :
+    // il faut "none" (+ secure) pour que le cookie soit envoyé cross-site.
+    // En local (http://localhost), "none" exigerait quand même secure=true, que
+    // les navigateurs refusent sans HTTPS — on reste donc sur "lax" en dev.
+    sameSite: isProd ? "none" : "lax",
+    secure: isProd,
+    maxAge: 6 * 60 * 60 * 1000,
+  });
+}
+
 // POST /suivi/:trackingCode/verifier — le client confirme son email pour accéder au suivi.
 export async function verifierSuivi(req: Request, res: Response) {
   const { email } = verifySchema.parse(req.body);
@@ -54,26 +68,16 @@ export async function verifierSuivi(req: Request, res: Response) {
     throw new HttpError(401, "Code ou email invalide");
   }
 
-  const sessionToken = signClientSession({ commandeId: commande.id });
-  const isProd = process.env.NODE_ENV === "production";
-  res.cookie(SESSION_COOKIE, sessionToken, {
-    httpOnly: true,
-    // En prod, frontend et backend vivent sur des domaines Vercel différents :
-    // il faut "none" (+ secure) pour que le cookie soit envoyé cross-site.
-    // En local (http://localhost), "none" exigerait quand même secure=true, que
-    // les navigateurs refusent sans HTTPS — on reste donc sur "lax" en dev.
-    sameSite: isProd ? "none" : "lax",
-    secure: isProd,
-    maxAge: 6 * 60 * 60 * 1000,
-  });
-
+  setSessionCookie(res, signClientSession({ commandeId: commande.id }));
   res.json(serialize(commande));
 }
 
-// GET /suivi/:trackingCode — réutilise la session posée par /verifier pour éviter de
-// redemander l'email à chaque rafraîchissement de page.
+// GET /suivi/:trackingCode — réutilise la session posée par /verifier (cookie), ou le
+// lien magique inclus dans les emails (?token=...) pour éviter de redemander l'email.
 export async function getSuivi(req: Request, res: Response) {
-  const token = req.cookies?.[SESSION_COOKIE];
+  const cookieToken = req.cookies?.[SESSION_COOKIE];
+  const magicToken = typeof req.query.token === "string" ? req.query.token : undefined;
+  const token = cookieToken ?? magicToken;
   if (!token) throw new HttpError(401, "Vérification requise");
 
   let payload;
@@ -89,6 +93,13 @@ export async function getSuivi(req: Request, res: Response) {
   });
   if (!commande || commande.trackingCode !== req.params.trackingCode) {
     throw new HttpError(401, "Vérification requise");
+  }
+
+  // Premier accès via le lien magique de l'email : on pose le cookie pour que
+  // les visites suivantes (rafraîchissement, retour sur le site) n'aient plus
+  // besoin du token dans l'URL.
+  if (magicToken && !cookieToken) {
+    setSessionCookie(res, magicToken);
   }
 
   res.json(serialize(commande));

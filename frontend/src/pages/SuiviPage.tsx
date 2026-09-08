@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
 import { TrackingMap } from "../components/TrackingMap";
 import type { TrackingPoint } from "../components/TrackingMap";
@@ -32,6 +32,8 @@ interface SuiviData {
 
 export function SuiviPage() {
   const { trackingCode } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const magicToken = searchParams.get("token");
   const [email, setEmail] = useState("");
   const [data, setData] = useState<SuiviData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,9 +41,17 @@ export function SuiviPage() {
   const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
+    const url = magicToken
+      ? `/suivi/${trackingCode}?token=${encodeURIComponent(magicToken)}`
+      : `/suivi/${trackingCode}`;
     api
-      .get<SuiviData>(`/suivi/${trackingCode}`)
-      .then(({ data: result }) => setData(result))
+      .get<SuiviData>(url)
+      .then(({ data: result }) => {
+        setData(result);
+        // Le backend a posé le cookie de session à partir du token : on peut
+        // retirer le token de l'URL visible (historique, partage d'écran...).
+        if (magicToken) setSearchParams({}, { replace: true });
+      })
       .catch(() => {})
       .finally(() => setCheckingSession(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps

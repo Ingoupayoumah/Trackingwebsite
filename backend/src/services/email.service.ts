@@ -11,6 +11,7 @@ interface CommandeCreeeParams {
   pointDepart: string;
   pointLivraison: string;
   delaiEstime: string;
+  magicToken: string;
 }
 
 interface StatutMisAJourParams {
@@ -20,6 +21,7 @@ interface StatutMisAJourParams {
   trackingCode: string;
   statut: string;
   message: string;
+  magicToken: string;
 }
 
 const STATUT_LABELS: Record<string, string> = {
@@ -32,8 +34,10 @@ const STATUT_LABELS: Record<string, string> = {
   ANNULEE: "Annulée",
 };
 
-function trackingUrl(trackingCode: string) {
-  return `${env.frontendUrl}/suivi/${trackingCode}`;
+// Le token magique permet d'accéder directement au suivi en cliquant depuis
+// l'email, sans redemander l'email au client (voir GET /suivi/:code côté backend).
+function trackingUrl(trackingCode: string, magicToken: string) {
+  return `${env.frontendUrl}/suivi/${trackingCode}?token=${magicToken}`;
 }
 
 async function send(to: string, subject: string, html: string) {
@@ -133,9 +137,9 @@ export async function sendCommandeCreeeEmail(params: CommandeCreeeParams) {
         </td>
       </tr>
     </table>
-    ${ctaButton(trackingUrl(params.trackingCode), "Suivre mon colis")}
+    ${ctaButton(trackingUrl(params.trackingCode, params.magicToken), "Suivre mon colis")}
     <p style="margin:16px 0 0;font-size:13px;color:#9a9a9a;line-height:1.6;">
-      Il vous sera demandé de confirmer votre email (${params.clientEmail}) pour accéder au suivi.
+      Gardez cet email : ce lien vous donne un accès direct au suivi.
     </p>`;
 
   await send(
@@ -164,7 +168,7 @@ export async function sendStatutMisAJourEmail(params: StatutMisAJourParams) {
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#17171a;">${params.message}</p>
     <p style="margin:0 0 4px;font-size:13px;color:#6b6b6b;">Code de suivi</p>
     ${trackingCodePill(params.trackingCode)}
-    ${ctaButton(trackingUrl(params.trackingCode), "Voir le suivi complet")}`;
+    ${ctaButton(trackingUrl(params.trackingCode, params.magicToken), "Voir le suivi complet")}`;
 
   await send(
     params.clientEmail,

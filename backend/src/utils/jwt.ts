@@ -29,3 +29,11 @@ export function signClientSession(payload: ClientSessionPayload): string {
 export function verifyClientSession(token: string): ClientSessionPayload {
   return jwt.verify(token, env.clientSessionSecret) as ClientSessionPayload;
 }
+
+// Lien "magique" inclus dans les emails de suivi : reçu par email = identité déjà
+// prouvée, donc pas besoin de redemander l'email en cliquant depuis le message.
+// Durée de vie plus longue qu'une session de navigation classique, car l'email
+// peut être rouvert des jours après son envoi.
+export function signMagicLink(payload: ClientSessionPayload): string {
+  return jwt.sign(payload, env.clientSessionSecret, { expiresIn: "30d" });
+}

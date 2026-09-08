@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../config/prisma";
 import { HttpError } from "../middleware/errorHandler";
 import { generateTrackingCode } from "../utils/trackingCode";
+import { signMagicLink } from "../utils/jwt";
 import { geocodeAddress } from "../services/geocoding.service";
 import { sendCommandeCreeeEmail, sendStatutMisAJourEmail } from "../services/email.service";
 
@@ -79,6 +80,7 @@ export async function createCommande(req: Request, res: Response) {
     pointDepart: commande.pointDepart,
     pointLivraison: commande.pointLivraison,
     delaiEstime: commande.delaiEstime,
+    magicToken: signMagicLink({ commandeId: commande.id }),
   });
 
   res.status(201).json(commande);
@@ -165,6 +167,7 @@ export async function addTrackingEvent(req: Request, res: Response) {
       trackingCode: commande.trackingCode,
       statut: data.statut,
       message: data.message,
+      magicToken: signMagicLink({ commandeId: commande.id }),
     });
   }
 
